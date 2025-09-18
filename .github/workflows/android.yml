@@ -1,0 +1,40 @@
+name: Build FortuneAnalyzerPro APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          npm run build
+
+      - name: ⚡ Install Capacitor
+        run: npm install -g @capacitor/cli
+
+      - name: 🔄 Sync Capacitor with Android
+        run: npx cap sync android
+
+      - name: 🏗️ Build Android APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: 📤 Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: fortune-analyzer-apk
+          path: android/app/build/outputs/apk/debug/*.apk
