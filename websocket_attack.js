@@ -1,0 +1,1 @@
+ws.send(JSON.stringify({ type: 'auth', bypass: true }));
